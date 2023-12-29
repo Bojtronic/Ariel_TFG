@@ -1,0 +1,11 @@
+CREATE TABLE usuarios (
+    nombre VARCHAR(15),
+    clave VARCHAR(15)
+);
+
+INSERT INTO usuarios (nombre, clave) VALUES ('u1', 'clave1');
+
+INSERT INTO usuarios (nombre, clave) VALUES ('u2', 'clave2');
+
+
+select * from usuarios
