@@ -26,7 +26,7 @@ const add = (req, res) => {
 
 
 const getById = (req, res) => {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     pool.query(consultas.getById, [id], (error, results) => {
         if (error) throw error;
         res.status(200).json(results.rows);
