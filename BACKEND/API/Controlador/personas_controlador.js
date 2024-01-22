@@ -1,5 +1,5 @@
 const pool = require("../conexion_BD");
-const consultas = require('../Modelo/usuario/usuario_consultas');
+const consultas = require('../Modelo/PERSONA/personas_consultas');
 
 const get = (req, res) => {
     pool.query(consultas.get, (error, results) => {
@@ -10,13 +10,13 @@ const get = (req, res) => {
 
 
 const add = (req, res) => {
-    const { cedula, name, lastname, age, gender, height, weight, phone, start_date, end_date, bmi } = req.body;
-    pool.query(consultas.checkIdExists, [cedula], (error, results) => {
+    const { nombre, apellido1, apellido2, cedula, fecha_nacimiento, genero, estado } = req.body;
+    pool.query(consulta.getByCedula, [cedula], (error, results) => {
         if (results.rows.length) {
             res.json("ya existe");
 	    return;
         }
-        pool.query(consultas.add, [cedula, name, lastname, age, gender, height, weight, phone, start_date, end_date, bmi], (error, results) => {
+        pool.query(consultas.add, [nombre, apellido1, apellido2, cedula, fecha_nacimiento, genero, estado], (error, results) => {
             if (error) throw error;
             res.status(201).json('creado exitosamente');
         });
@@ -26,8 +26,16 @@ const add = (req, res) => {
 
 
 const getById = (req, res) => {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     pool.query(consultas.getById, [id], (error, results) => {
+        if (error) throw error;
+        res.status(200).json(results.rows);
+    });
+};
+
+const getByCedula = (req, res) => {
+    const cedula = req.params.cedula;
+    pool.query(consultas.getByCedula, [cedula], (error, results) => {
         if (error) throw error;
         res.status(200).json(results.rows);
     });

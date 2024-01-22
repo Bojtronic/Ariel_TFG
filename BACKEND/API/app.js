@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require('cors');
 
-const usuarios = require('../API/Modelo/usuario/usuario_rutas');
+const personas = require('../API/Modelo/PERSONA/personas_rutas');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use('/api/usuarios', usuarios);
+app.use('/api/personas', personas);
 
 app.listen(port, () => {
   console.log(`La aplicación está escuchando en http://localhost:${port}`);
