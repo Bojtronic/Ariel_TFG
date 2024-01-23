@@ -11,7 +11,7 @@ const get = (req, res) => {
 
 const add = (req, res) => {
     const { nombre, apellido1, apellido2, cedula, fecha_nacimiento, genero, estado } = req.body;
-    pool.query(consulta.getByCedula, [cedula], (error, results) => {
+    pool.query(consultas.getByCedula, [cedula], (error, results) => {
         if (results.rows.length) {
             res.json("ya existe");
 	    return;
@@ -59,16 +59,16 @@ const remove = (req, res) => {
 
 const update = (req, res) => {
     const id = parseInt(req.params.id);
-    const { name, lastname, age, gender, height, weight, phone, start_date, end_date, bmi } = req.body;
+    const { nombre, apellido1, apellido2, cedula, fecha_nacimiento, genero, estado } = req.body;
     pool.query(consultas.getById, [id], (error, results) => {
         const notFound = !results.rows.length;
         if (notFound) {
             res.status(404).send("No existe en la base de datos");
             return;
         }
-        pool.query(consultas.update, [name, lastname, age, gender, height, weight, phone, start_date, end_date, bmi, id], (error, results) => {
+        pool.query(consultas.update, [nombre, apellido1, apellido2, cedula, fecha_nacimiento, genero, estado, id], (error, results) => {
             if (error) throw error;
-            res.status(200).send("Actualizado exitosamente");
+            res.status(200).json("Actualizado exitosamente");
         });
     });
 };
