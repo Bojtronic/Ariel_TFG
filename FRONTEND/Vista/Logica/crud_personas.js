@@ -1,5 +1,3 @@
-
-
 const personas_url = 'http://localhost:3000/api/personas';
 
 
@@ -101,16 +99,20 @@ async function agregarPersona() {
     const apellido1 = document.getElementById('apellido1').value;
     const apellido2 = document.getElementById('apellido2').value;
     const cedula = document.getElementById('cedula').value;
-    const fechaNacimiento = document.getElementById('fechaNacimiento').value;
+    const fecha = document.getElementById('fechaNacimiento').value;
     const genero = document.getElementById('genero').value;
     const estado = document.getElementById('estado').value;
-
-    if (!nombre || !apellido1 || !apellido2 || !cedula || !fechaNacimiento || !genero || !estado) {
+    
+    
+    if (!nombre || !apellido1 || !apellido2 || !cedula || !fecha || !genero || !estado) {
         alert('Por favor, complete todos los campos.');
         return;
     }
 
-    const persona = { nombre, apellido1, apellido2, cedula, fechaNacimiento, genero, estado };
+    let partes = fecha.split('-');
+    let fecha_nacimiento = `${partes[2]}-${partes[1]}-${partes[0]}`;
+    
+    const persona = { nombre, apellido1, apellido2, cedula, fecha_nacimiento, genero, estado };
 
     try {
         await create(personas_url, persona);
@@ -118,10 +120,12 @@ async function agregarPersona() {
         limpiarFormulario();
         await actualizarLista();
         llenarSelect();
+        console.log(persona.fecha);
     } catch (error) {
         console.error('Error al agregar persona:', error);
         alert('Error al agregar persona. Consulta la consola para más detalles.');
     }
+    
 }
 
 
@@ -140,6 +144,7 @@ async function eliminarPersona() {
         alert('Eliminado con éxito');
         limpiarFormulario();
         await actualizarLista();
+        location.reload();
         llenarSelect();
     } catch (error) {
         console.error(`Error al eliminar para el ID: ${selectedId}`, error);
@@ -156,7 +161,13 @@ async function editarPersona() {
     const apellido1 = document.getElementById('apellido1Editar').value;
     const apellido2 = document.getElementById('apellido2Editar').value;
     const cedula = parseInt(document.getElementById('cedulaEditar').value, 10);
-    const fecha_nacimiento = document.getElementById('fechaNacimientoEditar').value;
+
+
+    const fecha = document.getElementById('fechaNacimientoEditar').value;
+
+    let partes = fecha.split('-');
+    let fecha_nacimiento = `${partes[2]}-${partes[1]}-${partes[0]}`;
+
     const genero = document.getElementById('generoEditar').value;
     const estado = document.getElementById('estadoEditar').value;
 
@@ -175,6 +186,9 @@ async function editarPersona() {
         estado
     };
 
+    console.log(objetoEditado.fecha_nacimiento);
+
+    
     try {
         await update(`${personas_url}/${selectedId}`, objetoEditado);
         alert('Editado con éxito');
@@ -184,7 +198,7 @@ async function editarPersona() {
     } catch (error) {
         console.error('Error al editar persona:', error);
         alert('Error al editar persona. Consulta la consola para más detalles.');
-    }
+    } 
 }
 
 // Función para llenar opciones de select
@@ -223,7 +237,21 @@ function llenarSelect() {
                     document.getElementById('apellido1Editar').value = personaSeleccionada.apellido1;
                     document.getElementById('apellido2Editar').value = personaSeleccionada.apellido2;
                     document.getElementById('cedulaEditar').value = personaSeleccionada.cedula;
-                    document.getElementById('fechaNacimientoEditar').value = personaSeleccionada.fechaNacimiento;
+                    
+                    const fecha = new Date(personaSeleccionada.fecha_nacimiento);
+                    const opcionesDeFormato = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                    const fechaFormateada = fecha.toLocaleDateString('es-ES', opcionesDeFormato);
+
+                    let partes = fechaFormateada.split('/');
+                    let fecha_nacimiento = `${partes[2]}-${partes[1]}-${partes[0]}`;
+
+                    document.getElementById('fechaNacimientoEditar').value = fechaFormateada;
+    
+                    //document.getElementById('fechaNacimientoEditar').value = fecha_nacimiento;
+                    document.getElementById('fechaNacimientoEditar').value = fecha_nacimiento;
+
+                    console.log(fecha_nacimiento);
+                    
                     document.getElementById('generoEditar').value = personaSeleccionada.genero;
                     document.getElementById('estadoEditar').value = personaSeleccionada.estado;
                 } else {
@@ -257,14 +285,14 @@ function actualizarLista() {
 
             // Llenar la tabla con los datos de las personas
             personas.forEach(persona => {
-                const row = document.createElement('tr');
+                const row = document.createElement('tr'); 
                 row.innerHTML = `
                     <td>${persona.id}</td>
                     <td>${persona.nombre}</td>
                     <td>${persona.apellido1}</td>
                     <td>${persona.apellido2}</td>
                     <td>${persona.cedula}</td>
-                    <td>${persona.fechaNacimiento}</td>
+                    <td>${persona.fecha_nacimiento}</td>
                     <td>${persona.genero}</td>
                     <td>${persona.estado}</td>
                 `;

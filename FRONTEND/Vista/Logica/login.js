@@ -11,7 +11,7 @@ function submitForm() {
     }
 
     // Realizar la solicitud GET utilizando fetch()
-    fetch(`${serverUrl}/usuarios?id=${encodeURIComponent(username)}`, {
+    fetch(`${serverUrl}/administradores?id=${encodeURIComponent(username)}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -19,7 +19,9 @@ function submitForm() {
     })
         .then(response => {
             if (!response.ok) {
+                alert('La solicitud no fue exitosa');
                 throw new Error('La solicitud no fue exitosa');
+                
             }
             return response.json();
         })
@@ -28,17 +30,14 @@ function submitForm() {
             const usuarioEncontrado = data.find(user => user.nombre === username && user.clave === password);
 
             if (usuarioEncontrado) {
-                console.log('Usuario encontrado:', usuarioEncontrado);
                 // Redirigir a otra página HTML (reemplaza 'otra_pagina.html' con la ruta correcta)
                 window.location.href = 'home.html';
             } else {
                 console.log('Usuario no encontrado o credenciales incorrectas.');
+                alert('Usuario no encontrado o credenciales incorrectas.');
             }
         })
         .catch(error => {
-            console.error('Error al realizar la solicitud:', error.message);
+            alert(`Error al realizar la solicitud: ${error.message}`);
         });
 }
-
-// Exportar la función para que pueda ser utilizada en otros archivos
-module.exports = submitForm;

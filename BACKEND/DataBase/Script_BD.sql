@@ -9,7 +9,7 @@ CREATE TABLE PERSONAS (
     apellido1 VARCHAR(50),
 	apellido2 VARCHAR(50),
 	cedula BIGINT,
-	fecha_nacimiento date,
+	fecha_nacimiento VARCHAR(10),
 	genero VARCHAR(20),
 	estado VARCHAR(20)
 );
@@ -66,7 +66,7 @@ CREATE TABLE CONTROL_ASISTENCIA (
 	id SERIAL PRIMARY KEY,
     id_funcionario INT,
 	id_menor INT,
-	fecha DATE,
+	fecha VARCHAR(10),
 	asistencia BOOLEAN
 );
 
@@ -80,7 +80,7 @@ CREATE TABLE PROYECTOS (
 	id SERIAL PRIMARY KEY,
     nombre VARCHAR(20),
 	descripcion VARCHAR(50),
-	fecha DATE
+	fecha VARCHAR(10)
 );
 
 CREATE TABLE RENDIMIENTOS (
@@ -153,11 +153,11 @@ ADD FOREIGN KEY (id_categoria) REFERENCES CATEGORIAS(id);
 -- Para PERSONAS
 INSERT INTO PERSONAS (nombre, apellido1, apellido2, cedula, fecha_nacimiento, genero, estado)
 VALUES
-    ('Nombre1', 'Apellido1-1', 'Apellido1-2', 1234567890, '2000-01-01', 'Masculino', 'Activo'),
-    ('Nombre2', 'Apellido2-1', 'Apellido2-2', 2345678901, '2000-02-02', 'Femenino', 'Inactivo'),
-    ('Nombre3', 'Apellido3-1', 'Apellido3-2', 3456789012, '2000-03-03', 'Masculino', 'Activo'),
-    ('Nombre4', 'Apellido4-1', 'Apellido4-2', 4567890123, '2000-04-04', 'Femenino', 'Inactivo'),
-    ('Nombre5', 'Apellido5-1', 'Apellido5-2', 5678901234, '2000-05-05', 'Masculino', 'Activo');
+    ('Nombre1', 'Apellido1-1', 'Apellido1-2', 1234567890, '01-01-2000', 'Masculino', 'Activo'),
+    ('Nombre2', 'Apellido2-1', 'Apellido2-2', 2345678901, '02-02-2000', 'Femenino', 'Inactivo'),
+    ('Nombre3', 'Apellido3-1', 'Apellido3-2', 3456789012, '03-03-2000', 'Masculino', 'Activo'),
+    ('Nombre4', 'Apellido4-1', 'Apellido4-2', 4567890123, '04-04-2000', 'Femenino', 'Inactivo'),
+    ('Nombre5', 'Apellido5-1', 'Apellido5-2', 5678901234, '05-05-2000', 'Masculino', 'Activo');
 
 -- Para ROLES
 INSERT INTO ROLES (nombre, descripcion)
@@ -216,11 +216,11 @@ VALUES
 -- Para CONTROL_ASISTENCIA
 INSERT INTO CONTROL_ASISTENCIA (id_funcionario, id_menor, fecha, asistencia)
 VALUES
-    (1, 1, '2024-01-20', true),
-    (2, 2, '2024-01-20', false),
-    (3, 3, '2024-01-20', true),
-    (4, 4, '2024-01-20', false),
-    (5, 5, '2024-01-20', true);
+    (1, 1, '01-10-2024', true),
+    (2, 2, '01-10-2024', false),
+    (3, 3, '01-10-2024', true),
+    (4, 4, '01-10-2024', false),
+    (5, 5, '01-10-2024', true);
 
 -- Para CATEGORIAS
 INSERT INTO CATEGORIAS (dinero, descripcion)
@@ -234,11 +234,11 @@ VALUES
 -- Para PROYECTOS
 INSERT INTO PROYECTOS (nombre, descripcion, fecha)
 VALUES
-    ('Proyecto1', 'Descripción Proyecto1', '2024-01-20'),
-    ('Proyecto2', 'Descripción Proyecto2', '2024-01-21'),
-    ('Proyecto3', 'Descripción Proyecto3', '2024-01-22'),
-    ('Proyecto4', 'Descripción Proyecto4', '2024-01-23'),
-    ('Proyecto5', 'Descripción Proyecto5', '2024-01-24');
+    ('Proyecto1', 'Descripción Proyecto1', '01-10-2024'),
+    ('Proyecto2', 'Descripción Proyecto2', '01-10-2024'),
+    ('Proyecto3', 'Descripción Proyecto3', '01-10-2024'),
+    ('Proyecto4', 'Descripción Proyecto4', '01-10-2024'),
+    ('Proyecto5', 'Descripción Proyecto5', '01-10-2024');
 
 -- Para RENDIMIENTOS
 INSERT INTO RENDIMIENTOS (id_menor, id_proyecto, nota)
