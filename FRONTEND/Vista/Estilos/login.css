@@ -5,6 +5,8 @@ body {
     justify-content: center;
     height: 100vh;
     margin: 0;
+    background-image: url('../Imagenes/login_fondo.avif');
+    background-size: cover; 
 }
 
 .login-container {
