@@ -1,281 +1,140 @@
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
+-- Eliminar la base de datos si ya existe
+DROP DATABASE IF EXISTS RecursosHumanos;
 
----------------------- CREACION DE TABLAS ------------------------------------------------------------
+-- Crear la base de datos
+CREATE DATABASE RecursosHumanos;
 
-CREATE TABLE PERSONAS (
-	id SERIAL PRIMARY KEY,
-    nombre VARCHAR(50),
-    apellido1 VARCHAR(50),
-	apellido2 VARCHAR(50),
-	cedula BIGINT,
-	fecha_nacimiento VARCHAR(10),
-	genero VARCHAR(20),
-	estado VARCHAR(20)
+-- Conectar a la base de datos
+\c RecursosHumanos;
+
+-- Crear las tablas principales
+
+-- Tabla de Colaboradores
+CREATE TABLE Colaboradores (
+    id_colaborador SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    cedula VARCHAR(20) UNIQUE NOT NULL,
+    fecha_ingreso DATE NOT NULL,
+    puesto VARCHAR(100),
+    salario_base NUMERIC(10, 2) NOT NULL,
+    salario_por_hora NUMERIC(10, 2)
 );
 
-CREATE TABLE ADMINISTRADORES (
-	id SERIAL PRIMARY KEY,
-    id_persona INT,
-    correo VARCHAR(50),
-	clave VARCHAR(20)
+-- Tabla de Aguinaldos
+CREATE TABLE Aguinaldos (
+    id_aguinaldo SERIAL PRIMARY KEY,
+    id_colaborador INT NOT NULL,
+    anio INT NOT NULL,
+    monto NUMERIC(10, 2) NOT NULL
 );
 
-CREATE TABLE ROLES (
-	id SERIAL PRIMARY KEY,
-    nombre VARCHAR(20),
-	descripcion VARCHAR(50)
+-- Tabla de Permisos
+CREATE TABLE Permisos (
+    id_permiso SERIAL PRIMARY KEY,
+    id_colaborador INT NOT NULL,
+    fecha_solicitud DATE NOT NULL,
+    tipo_permiso VARCHAR(50) CHECK (tipo_permiso IN ('Con goce de salario', 'Sin goce de salario')) NOT NULL,
+    estado VARCHAR(20) CHECK (estado IN ('Pendiente', 'Aprobado', 'Rechazado')) DEFAULT 'Pendiente',
+    detalles TEXT
 );
 
-CREATE TABLE TELEFONOS (
-	id SERIAL PRIMARY KEY,
-	id_persona INT,
-    numero VARCHAR(20),
-	descripcion VARCHAR(50)
+-- Tabla de Vacaciones
+CREATE TABLE Vacaciones (
+    id_vacacion SERIAL PRIMARY KEY,
+    id_colaborador INT NOT NULL,
+    dias_disponibles NUMERIC(5, 2) DEFAULT 0,
+    dias_usados NUMERIC(5, 2) DEFAULT 0
 );
 
-CREATE TABLE AULAS (
-	id SERIAL PRIMARY KEY,
-    nombre VARCHAR(20),
-	descripcion VARCHAR(50)
+-- Tabla de Horas Extras
+CREATE TABLE HorasExtras (
+    id_hora_extra SERIAL PRIMARY KEY,
+    id_colaborador INT NOT NULL,
+    fecha DATE NOT NULL,
+    cantidad_horas NUMERIC(5, 2) NOT NULL,
+    monto_pagado NUMERIC(10, 2) NOT NULL
 );
 
-CREATE TABLE FUNCIONARIOS (
-	id SERIAL PRIMARY KEY,
-    id_persona INT,
-	rol INT,
-	aula INT,
-	correo VARCHAR(50),
-	clave VARCHAR(10)
+-- Tabla de Incapacidades
+CREATE TABLE Incapacidades (
+    id_incapacidad SERIAL PRIMARY KEY,
+    id_colaborador INT NOT NULL,
+    tipo_incapacidad VARCHAR(50) NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL,
+    detalles TEXT
 );
 
-CREATE TABLE ENCARGADOS (
-	id SERIAL PRIMARY KEY,
-    id_persona INT,
-	direccion VARCHAR(200)
+-- Tabla de Liquidaciones
+CREATE TABLE Liquidaciones (
+    id_liquidacion SERIAL PRIMARY KEY,
+    id_colaborador INT NOT NULL,
+    fecha_calculo DATE NOT NULL,
+    monto_total NUMERIC(10, 2) NOT NULL
 );
 
-CREATE TABLE PERSONAS_MENORES (
-	id SERIAL PRIMARY KEY,
-    id_persona INT,
-	id_encargado INT,
-	autorizacion BOOLEAN
+-- Tabla de Marcas de Entrada/Salida
+CREATE TABLE RegistroMarcas (
+    id_marca SERIAL PRIMARY KEY,
+    id_colaborador INT NOT NULL,
+    fecha DATE NOT NULL,
+    hora_entrada TIME NOT NULL,
+    hora_salida TIME
 );
 
-CREATE TABLE CONTROL_ASISTENCIA (
-	id SERIAL PRIMARY KEY,
-    id_funcionario INT,
-	id_menor INT,
-	fecha VARCHAR(10),
-	asistencia BOOLEAN
+-- Tabla de Deducciones
+CREATE TABLE Deducciones (
+    id_deduccion SERIAL PRIMARY KEY,
+    id_colaborador INT NOT NULL,
+    fecha DATE NOT NULL,
+    monto NUMERIC(10, 2) NOT NULL,
+    tipo_deduccion VARCHAR(50) CHECK (tipo_deduccion IN ('CCSS', 'Impuesto sobre la Renta')) NOT NULL
 );
 
-CREATE TABLE CATEGORIAS (
-	id SERIAL PRIMARY KEY,
-    dinero INT,
-	descripcion VARCHAR(50)
+-- Tabla de Planillas
+CREATE TABLE Planillas (
+    id_planilla SERIAL PRIMARY KEY,
+    id_colaborador INT NOT NULL,
+    fecha_pago DATE NOT NULL,
+    salario_bruto NUMERIC(10, 2) NOT NULL,
+    deducciones NUMERIC(10, 2) NOT NULL,
+    salario_neto NUMERIC(10, 2) NOT NULL
 );
 
-CREATE TABLE PROYECTOS (
-	id SERIAL PRIMARY KEY,
-    nombre VARCHAR(20),
-	descripcion VARCHAR(50),
-	fecha VARCHAR(10)
+-- Tabla de Reportes
+CREATE TABLE Reportes (
+    id_reporte SERIAL PRIMARY KEY,
+    id_modulo VARCHAR(50) NOT NULL,
+    fecha_generacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    formato VARCHAR(10) CHECK (formato IN ('PDF')) NOT NULL,
+    contenido BYTEA
 );
 
-CREATE TABLE RENDIMIENTOS (
-	id SERIAL PRIMARY KEY,
-    id_menor INT,
-	id_proyecto INT,
-	nota INT
+-- Tabla de Perfiles y Usuarios (Seguridad)
+CREATE TABLE Perfiles (
+    id_perfil SERIAL PRIMARY KEY,
+    nombre_perfil VARCHAR(50) NOT NULL,
+    descripcion TEXT
 );
 
-CREATE TABLE TAMISAJES (
-	id SERIAL PRIMARY KEY,
-    id_menor INT,
-	periodo INT,
-	resultado INT
+CREATE TABLE Usuarios (
+    id_usuario SERIAL PRIMARY KEY,
+    id_colaborador INT,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    id_perfil INT
 );
 
-CREATE TABLE CUOTAS (
-	id SERIAL PRIMARY KEY,
-    id_menor INT,
-	id_categoria INT
-);
-
----------------------- ASIGNAR LLAVES FORANEAS ------------------------------------------------------------
-
--- Para ADMINISTRADORES
-ALTER TABLE ADMINISTRADORES
-ADD FOREIGN KEY (id_persona) REFERENCES PERSONAS(id);
-
--- Para TELEFONOS
-ALTER TABLE TELEFONOS
-ADD FOREIGN KEY (id_persona) REFERENCES PERSONAS(id);
-
--- Para FUNCIONARIOS
-ALTER TABLE FUNCIONARIOS
-ADD FOREIGN KEY (id_persona) REFERENCES PERSONAS(id),
-ADD FOREIGN KEY (rol) REFERENCES ROLES(id),
-ADD FOREIGN KEY (aula) REFERENCES AULAS(id);
-
--- Para ENCARGADOS
-ALTER TABLE ENCARGADOS
-ADD FOREIGN KEY (id_persona) REFERENCES PERSONAS(id);
-
--- Para PERSONAS_MENORES
-ALTER TABLE PERSONAS_MENORES
-ADD FOREIGN KEY (id_persona) REFERENCES PERSONAS(id),
-ADD FOREIGN KEY (id_encargado) REFERENCES ENCARGADOS(id);
-
--- Para CONTROL_ASISTENCIA
-ALTER TABLE CONTROL_ASISTENCIA
-ADD FOREIGN KEY (id_funcionario) REFERENCES FUNCIONARIOS(id),
-ADD FOREIGN KEY (id_menor) REFERENCES PERSONAS_MENORES(id);
-
--- Para RENDIMIENTOS
-ALTER TABLE RENDIMIENTOS
-ADD FOREIGN KEY (id_menor) REFERENCES PERSONAS_MENORES(id),
-ADD FOREIGN KEY (id_proyecto) REFERENCES PROYECTOS(id);
-
--- Para TAMISAJES
-ALTER TABLE TAMISAJES
-ADD FOREIGN KEY (id_menor) REFERENCES PERSONAS_MENORES(id);
-
--- Para CUOTAS
-ALTER TABLE CUOTAS
-ADD FOREIGN KEY (id_menor) REFERENCES PERSONAS_MENORES(id),
-ADD FOREIGN KEY (id_categoria) REFERENCES CATEGORIAS(id);
-
-
----------------------- INSERTAR DATOS ------------------------------------------------------------
-
--- Para PERSONAS
-INSERT INTO PERSONAS (nombre, apellido1, apellido2, cedula, fecha_nacimiento, genero, estado)
-VALUES
-    ('Nombre1', 'Apellido1-1', 'Apellido1-2', 1234567890, '01-01-2000', 'Masculino', 'Activo'),
-    ('Nombre2', 'Apellido2-1', 'Apellido2-2', 2345678901, '02-02-2000', 'Femenino', 'Inactivo'),
-    ('Nombre3', 'Apellido3-1', 'Apellido3-2', 3456789012, '03-03-2000', 'Masculino', 'Activo'),
-    ('Nombre4', 'Apellido4-1', 'Apellido4-2', 4567890123, '04-04-2000', 'Femenino', 'Inactivo'),
-    ('Nombre5', 'Apellido5-1', 'Apellido5-2', 5678901234, '05-05-2000', 'Masculino', 'Activo');
-
--- Para ROLES
-INSERT INTO ROLES (nombre, descripcion)
-VALUES
-    ('Rol1', 'Descripción1'),
-    ('Rol2', 'Descripción2'),
-    ('Rol3', 'Descripción3'),
-    ('Rol4', 'Descripción4'),
-    ('Rol5', 'Descripción5');
-
--- Para TELEFONOS
-INSERT INTO TELEFONOS (id_persona, numero, descripcion)
-VALUES
-    (1, '123456789', 'Teléfono1'),
-    (2, '234567890', 'Teléfono2'),
-    (3, '345678901', 'Teléfono3'),
-    (4, '456789012', 'Teléfono4'),
-    (5, '567890123', 'Teléfono5');
-
--- Para AULAS
-INSERT INTO AULAS (nombre, descripcion)
-VALUES
-    ('Aula1', 'Descripción Aula1'),
-    ('Aula2', 'Descripción Aula2'),
-    ('Aula3', 'Descripción Aula3'),
-    ('Aula4', 'Descripción Aula4'),
-    ('Aula5', 'Descripción Aula5');
-
--- Para FUNCIONARIOS
-INSERT INTO FUNCIONARIOS (id_persona, rol, aula, correo, clave)
-VALUES
-    (1, 1, 1, 'correo1@example.com', 'clave1'),
-    (2, 2, 2, 'correo2@example.com', 'clave2'),
-    (3, 3, 3, 'correo3@example.com', 'clave3'),
-    (4, 4, 4, 'correo4@example.com', 'clave4'),
-    (5, 5, 5, 'correo5@example.com', 'clave5');
-
--- Para ENCARGADOS
-INSERT INTO ENCARGADOS (id_persona, direccion)
-VALUES
-    (1, 'Dirección1'),
-    (2, 'Dirección2'),
-    (3, 'Dirección3'),
-    (4, 'Dirección4'),
-    (5, 'Dirección5');
-
--- Para PERSONAS_MENORES
-INSERT INTO PERSONAS_MENORES (id_persona, id_encargado, autorizacion)
-VALUES
-    (1, 1, true),
-    (2, 2, false),
-    (3, 3, true),
-    (4, 4, false),
-    (5, 5, true);
-
--- Para CONTROL_ASISTENCIA
-INSERT INTO CONTROL_ASISTENCIA (id_funcionario, id_menor, fecha, asistencia)
-VALUES
-    (1, 1, '01-10-2024', true),
-    (2, 2, '01-10-2024', false),
-    (3, 3, '01-10-2024', true),
-    (4, 4, '01-10-2024', false),
-    (5, 5, '01-10-2024', true);
-
--- Para CATEGORIAS
-INSERT INTO CATEGORIAS (dinero, descripcion)
-VALUES
-    (100, 'Categoría1'),
-    (200, 'Categoría2'),
-    (300, 'Categoría3'),
-    (400, 'Categoría4'),
-    (500, 'Categoría5');
-
--- Para PROYECTOS
-INSERT INTO PROYECTOS (nombre, descripcion, fecha)
-VALUES
-    ('Proyecto1', 'Descripción Proyecto1', '01-10-2024'),
-    ('Proyecto2', 'Descripción Proyecto2', '01-10-2024'),
-    ('Proyecto3', 'Descripción Proyecto3', '01-10-2024'),
-    ('Proyecto4', 'Descripción Proyecto4', '01-10-2024'),
-    ('Proyecto5', 'Descripción Proyecto5', '01-10-2024');
-
--- Para RENDIMIENTOS
-INSERT INTO RENDIMIENTOS (id_menor, id_proyecto, nota)
-VALUES
-    (1, 1, 90),
-    (2, 2, 85),
-    (3, 3, 92),
-    (4, 4, 78),
-    (5, 5, 95);
-
--- Para TAMISAJES
-INSERT INTO TAMISAJES (id_menor, periodo, resultado)
-VALUES
-    (1, 1, 80),
-    (2, 2, 75),
-    (3, 3, 88),
-    (4, 4, 70),
-    (5, 5, 92);
-
--- Para CUOTAS
-INSERT INTO CUOTAS (id_menor, id_categoria)
-VALUES
-    (1, 1),
-    (2, 2),
-    (3, 3),
-    (4, 4),
-    (5, 5);
-
--- Para ADMINISTRADORES
-INSERT INTO ADMINISTRADORES (id_persona, correo, clave)
-VALUES
-    (1, 'admin1@example.com', 'clave_admin1'),
-    (2, 'admin2@example.com', 'clave_admin2'),
-    (3, 'admin3@example.com', 'clave_admin3'),
-    (4, 'admin4@example.com', 'clave_admin4'),
-    (5, 'admin5@example.com', 'clave_admin5');
-
-
-select * from PERSONAS;
-
+-- Agregar llaves foráneas
+ALTER TABLE Aguinaldos ADD CONSTRAINT fk_aguinaldos_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
+ALTER TABLE Permisos ADD CONSTRAINT fk_permisos_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
+ALTER TABLE Vacaciones ADD CONSTRAINT fk_vacaciones_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
+ALTER TABLE HorasExtras ADD CONSTRAINT fk_horasextras_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
+ALTER TABLE Incapacidades ADD CONSTRAINT fk_incapacidades_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
+ALTER TABLE Liquidaciones ADD CONSTRAINT fk_liquidaciones_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
+ALTER TABLE RegistroMarcas ADD CONSTRAINT fk_registromarcas_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
+ALTER TABLE Deducciones ADD CONSTRAINT fk_deducciones_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
+ALTER TABLE Planillas ADD CONSTRAINT fk_planillas_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
+ALTER TABLE Usuarios ADD CONSTRAINT fk_usuarios_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
+ALTER TABLE Usuarios ADD CONSTRAINT fk_usuarios_perfiles FOREIGN KEY (id_perfil) REFERENCES Perfiles(id_perfil);
