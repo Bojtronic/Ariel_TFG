@@ -4,137 +4,142 @@ DROP DATABASE IF EXISTS RecursosHumanos;
 -- Crear la base de datos
 CREATE DATABASE RecursosHumanos;
 
--- Conectar a la base de datos
+-- Conectar a la base de datos (solo para PostgreSQL CLI)
 \c RecursosHumanos;
 
--- Crear las tablas principales
+-- Tabla de roles
+CREATE TABLE roles (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE, -- Ejemplo: administrador, colaborador, etc.
+    tarifa_hora NUMERIC(10, 2) NOT NULL CHECK (tarifa_hora >= 0) -- Tarifa por hora para cálculo de horas extras
+);
 
--- Tabla de Colaboradores
-CREATE TABLE Colaboradores (
-    id_colaborador SERIAL PRIMARY KEY,
+-- Tabla de usuarios
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    id_rol INT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
-    cedula VARCHAR(20) UNIQUE NOT NULL,
-    fecha_ingreso DATE NOT NULL,
-    puesto VARCHAR(100),
-    salario_base NUMERIC(10, 2) NOT NULL,
-    salario_por_hora NUMERIC(10, 2)
+    correo VARCHAR(150) UNIQUE NOT NULL CHECK (correo LIKE '%@%.%'), -- Validación básica de correo
+    contrasena VARCHAR(255) NOT NULL,
+    FOREIGN KEY (id_rol) REFERENCES roles(id) ON DELETE CASCADE
 );
 
--- Tabla de Aguinaldos
-CREATE TABLE Aguinaldos (
-    id_aguinaldo SERIAL PRIMARY KEY,
-    id_colaborador INT NOT NULL,
-    anio INT NOT NULL,
-    monto NUMERIC(10, 2) NOT NULL
+-- Tabla de salarios
+CREATE TABLE salarios (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    fecha_inicio DATE NOT NULL CHECK (fecha_inicio <= CURRENT_DATE),
+    fecha_fin DATE NOT NULL CHECK (fecha_fin >= fecha_inicio),
+    salario_mensual NUMERIC(12, 2) NOT NULL CHECK (salario_mensual >= 0),
+    bonificaciones NUMERIC(12, 2) DEFAULT 0 CHECK (bonificaciones >= 0),
+    horas_extras NUMERIC(12, 2) DEFAULT 0 CHECK (horas_extras >= 0),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Permisos
-CREATE TABLE Permisos (
-    id_permiso SERIAL PRIMARY KEY,
-    id_colaborador INT NOT NULL,
-    fecha_solicitud DATE NOT NULL,
-    tipo_permiso VARCHAR(50) CHECK (tipo_permiso IN ('Con goce de salario', 'Sin goce de salario')) NOT NULL,
-    estado VARCHAR(20) CHECK (estado IN ('Pendiente', 'Aprobado', 'Rechazado')) DEFAULT 'Pendiente',
-    detalles TEXT
+-- Tabla de permisos
+CREATE TABLE permisos (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    fecha_solicitud DATE NOT NULL DEFAULT CURRENT_DATE,
+    fecha_inicio DATE NOT NULL CHECK (fecha_inicio >= fecha_solicitud),
+    fecha_fin DATE NOT NULL CHECK (fecha_fin >= fecha_inicio),
+    estado VARCHAR(10) NOT NULL CHECK (estado IN ('aprobado', 'rechazado', 'pendiente')),
+    comentario TEXT,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Vacaciones
-CREATE TABLE Vacaciones (
-    id_vacacion SERIAL PRIMARY KEY,
-    id_colaborador INT NOT NULL,
-    dias_disponibles NUMERIC(5, 2) DEFAULT 0,
-    dias_usados NUMERIC(5, 2) DEFAULT 0
+-- Tabla de vacaciones
+CREATE TABLE vacaciones (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    dias_acumulados NUMERIC(5, 2) DEFAULT 0 CHECK (dias_acumulados >= 0),
+    dias_usados NUMERIC(5, 2) DEFAULT 0 CHECK (dias_usados >= 0 AND dias_usados <= dias_acumulados),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Horas Extras
-CREATE TABLE HorasExtras (
-    id_hora_extra SERIAL PRIMARY KEY,
-    id_colaborador INT NOT NULL,
-    fecha DATE NOT NULL,
-    cantidad_horas NUMERIC(5, 2) NOT NULL,
-    monto_pagado NUMERIC(10, 2) NOT NULL
+-- Tabla de solicitudes de vacaciones
+CREATE TABLE solicitudes_vacaciones (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    fecha_solicitud DATE NOT NULL DEFAULT CURRENT_DATE,
+    fecha_inicio DATE NOT NULL CHECK (fecha_inicio >= fecha_solicitud),
+    fecha_fin DATE NOT NULL CHECK (fecha_fin >= fecha_inicio),
+    estado VARCHAR(10) NOT NULL CHECK (estado IN ('aprobado', 'rechazado', 'pendiente')),
+    comentario TEXT,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Incapacidades
-CREATE TABLE Incapacidades (
-    id_incapacidad SERIAL PRIMARY KEY,
-    id_colaborador INT NOT NULL,
-    tipo_incapacidad VARCHAR(50) NOT NULL,
+-- Tabla de incapacidades
+CREATE TABLE incapacidades (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
     fecha_inicio DATE NOT NULL,
-    fecha_fin DATE NOT NULL,
-    detalles TEXT
+    fecha_fin DATE NOT NULL CHECK (fecha_fin >= fecha_inicio),
+    motivo TEXT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Liquidaciones
-CREATE TABLE Liquidaciones (
-    id_liquidacion SERIAL PRIMARY KEY,
-    id_colaborador INT NOT NULL,
-    fecha_calculo DATE NOT NULL,
-    monto_total NUMERIC(10, 2) NOT NULL
+-- Tabla de liquidaciones
+CREATE TABLE liquidaciones (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    fecha DATE NOT NULL DEFAULT CURRENT_DATE,
+    indemnizacion NUMERIC(12, 2) CHECK (indemnizacion >= 0),
+    aguinaldo NUMERIC(12, 2) CHECK (aguinaldo >= 0),
+    vacaciones_acumuladas NUMERIC(12, 2) CHECK (vacaciones_acumuladas >= 0),
+    total NUMERIC(12, 2) NOT NULL CHECK (total >= 0),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Marcas de Entrada/Salida
-CREATE TABLE RegistroMarcas (
-    id_marca SERIAL PRIMARY KEY,
-    id_colaborador INT NOT NULL,
-    fecha DATE NOT NULL,
-    hora_entrada TIME NOT NULL,
-    hora_salida TIME
+-- Tabla de marcas de entrada y salida
+CREATE TABLE marcas (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    fecha DATE NOT NULL CHECK (fecha <= CURRENT_DATE),
+    hora_entrada TIME,
+    hora_salida TIME,
+    ausente BOOLEAN DEFAULT FALSE,
+    tardia BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Deducciones
-CREATE TABLE Deducciones (
-    id_deduccion SERIAL PRIMARY KEY,
-    id_colaborador INT NOT NULL,
-    fecha DATE NOT NULL,
-    monto NUMERIC(10, 2) NOT NULL,
-    tipo_deduccion VARCHAR(50) CHECK (tipo_deduccion IN ('CCSS', 'Impuesto sobre la Renta')) NOT NULL
+-- Tabla de deducciones
+CREATE TABLE deducciones (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    fecha DATE NOT NULL CHECK (fecha <= CURRENT_DATE),
+    monto NUMERIC(12, 2) NOT NULL CHECK (monto >= 0),
+    tipo VARCHAR(50) NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Planillas
-CREATE TABLE Planillas (
-    id_planilla SERIAL PRIMARY KEY,
-    id_colaborador INT NOT NULL,
-    fecha_pago DATE NOT NULL,
-    salario_bruto NUMERIC(10, 2) NOT NULL,
-    deducciones NUMERIC(10, 2) NOT NULL,
-    salario_neto NUMERIC(10, 2) NOT NULL
+-- Tabla de planillas
+CREATE TABLE planillas (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL CHECK (fecha_fin >= fecha_inicio),
+    salario_bruto NUMERIC(12, 2) NOT NULL CHECK (salario_bruto >= 0),
+    deducciones NUMERIC(12, 2) NOT NULL CHECK (deducciones >= 0),
+    salario_neto NUMERIC(12, 2) NOT NULL CHECK (salario_neto >= 0),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Reportes
-CREATE TABLE Reportes (
-    id_reporte SERIAL PRIMARY KEY,
-    id_modulo VARCHAR(50) NOT NULL,
+-- Tabla de reportes
+CREATE TABLE reportes (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    modulo VARCHAR(50) NOT NULL,
     fecha_generacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    formato VARCHAR(10) CHECK (formato IN ('PDF')) NOT NULL,
-    contenido BYTEA
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Perfiles y Usuarios (Seguridad)
-CREATE TABLE Perfiles (
-    id_perfil SERIAL PRIMARY KEY,
-    nombre_perfil VARCHAR(50) NOT NULL,
-    descripcion TEXT
+-- Tabla de seguridad
+CREATE TABLE seguridad (
+    id SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    intentos_fallidos INT DEFAULT 0 CHECK (intentos_fallidos >= 0),
+    ultimo_acceso TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
-
-CREATE TABLE Usuarios (
-    id_usuario SERIAL PRIMARY KEY,
-    id_colaborador INT,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    id_perfil INT
-);
-
--- Agregar llaves foráneas
-ALTER TABLE Aguinaldos ADD CONSTRAINT fk_aguinaldos_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
-ALTER TABLE Permisos ADD CONSTRAINT fk_permisos_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
-ALTER TABLE Vacaciones ADD CONSTRAINT fk_vacaciones_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
-ALTER TABLE HorasExtras ADD CONSTRAINT fk_horasextras_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
-ALTER TABLE Incapacidades ADD CONSTRAINT fk_incapacidades_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
-ALTER TABLE Liquidaciones ADD CONSTRAINT fk_liquidaciones_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
-ALTER TABLE RegistroMarcas ADD CONSTRAINT fk_registromarcas_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
-ALTER TABLE Deducciones ADD CONSTRAINT fk_deducciones_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
-ALTER TABLE Planillas ADD CONSTRAINT fk_planillas_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
-ALTER TABLE Usuarios ADD CONSTRAINT fk_usuarios_colaboradores FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador);
-ALTER TABLE Usuarios ADD CONSTRAINT fk_usuarios_perfiles FOREIGN KEY (id_perfil) REFERENCES Perfiles(id_perfil);
