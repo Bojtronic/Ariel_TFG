@@ -10,7 +10,7 @@ CREATE DATABASE RecursosHumanos;
 -- Tabla de roles
 CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL UNIQUE, -- Ejemplo: administrador, colaborador, etc.
+    nombre VARCHAR(50) NOT NULL UNIQUE, -- Ejemplo: administrador, colaborador, etc.
     tarifa_hora NUMERIC(10, 2) NOT NULL CHECK (tarifa_hora >= 0) -- Tarifa por hora para cálculo de horas extras
 );
 
@@ -18,12 +18,18 @@ CREATE TABLE roles (
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     id_rol INT NOT NULL,
-    nombre VARCHAR(100) NOT NULL,
-    apellido VARCHAR(100) NOT NULL,
-    correo VARCHAR(150) UNIQUE NOT NULL CHECK (correo LIKE '%@%.%'), -- Validación básica de correo
-    contrasena VARCHAR(255) NOT NULL,
+    cedula BIGINT NOT NULL UNIQUE CHECK (cedula >= 100000000), -- Validación: mayor a 9 digitos
+    nombre VARCHAR(50) NOT NULL,
+    apellido_1 VARCHAR(50) NOT NULL,
+    apellido_2 VARCHAR(50) NOT NULL,
+    correo VARCHAR(50) UNIQUE NOT NULL CHECK (correo ~* '^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$'), -- Validación regex para correos
+    dominio_correo VARCHAR(10) NOT NULL, -- Ejemplo: gmail, outlook, hotmail, etc
+    contrasena VARCHAR(100) NOT NULL, -- Longitud para compatibilidad con contraseñas encriptadas
+    telefono BIGINT NOT NULL, 
+    operador_telefono VARCHAR(50) NOT NULL, -- Ejemplo: kolbi, claro, liberty
     FOREIGN KEY (id_rol) REFERENCES roles(id) ON DELETE CASCADE
 );
+
 
 -- Tabla de salarios
 CREATE TABLE salarios (
