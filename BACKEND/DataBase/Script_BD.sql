@@ -18,15 +18,20 @@ CREATE TABLE roles (
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     id_rol INT NOT NULL,
-    cedula BIGINT NOT NULL UNIQUE CHECK (cedula >= 100000000), -- Validación: mayor a 9 digitos
+    tipo_identificacion VARCHAR(50) NOT NULL, -- Ejemplo: cedula, dimex, etc
+    identificacion VARCHAR(100) NOT NULL, 
     nombre VARCHAR(50) NOT NULL,
     apellido_1 VARCHAR(50) NOT NULL,
     apellido_2 VARCHAR(50) NOT NULL,
+    provincia VARCHAR(50) NOT NULL,
+    canton VARCHAR(50) NOT NULL,
+    distrito VARCHAR(50) NOT NULL,
+    direccion VARCHAR(100) NOT NULL,
     correo VARCHAR(50) UNIQUE NOT NULL CHECK (correo ~* '^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$'), -- Validación regex para correos
-    dominio_correo VARCHAR(10) NOT NULL, -- Ejemplo: gmail, outlook, hotmail, etc
     contrasena VARCHAR(100) NOT NULL, -- Longitud para compatibilidad con contraseñas encriptadas
     telefono BIGINT NOT NULL, 
     operador_telefono VARCHAR(50) NOT NULL, -- Ejemplo: kolbi, claro, liberty
+    estado VARCHAR(20) DEFAULT 'activo',
     FOREIGN KEY (id_rol) REFERENCES roles(id) ON DELETE CASCADE
 );
 
