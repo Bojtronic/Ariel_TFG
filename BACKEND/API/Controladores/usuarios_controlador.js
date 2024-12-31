@@ -1,5 +1,5 @@
 const pool = require("../conexion_BD");
-const consultas = require('../Modelo/USUARIOS/consultas');
+const consultas = require('../Modelo/USUARIO/consultas');
 
 const get = (req, res) => {
     pool.query(consultas.get, (error, results) => {
