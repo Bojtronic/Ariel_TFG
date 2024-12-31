@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantenimiento de Usuarios</title>
+    <link rel="stylesheet" href="../Estilos/crud_personas.css">
+</head>
+<body>
+    <div>
+        <a href="home.html" class="home-button">Regresar a la página de inicio</a>
+    </div>
+    <hr>
+    <div class="container">
+        <div class="column form-column">
+            <h2>Agregar Usuario</h2>
+            <input type="text" id="nombre" class="form-input" placeholder="Nombre">
+            <input type="text" id="apellido1" class="form-input" placeholder="Primer Apellido">
+            <input type="text" id="apellido2" class="form-input" placeholder="Segundo Apellido">
+            <input type="text" id="identificacion" class="form-input" placeholder="Identificación">
+            <input type="email" id="correo" class="form-input" placeholder="Correo Electrónico">
+            <input type="password" id="contrasena" class="form-input" placeholder="Contraseña">
+            <input type="text" id="telefono" class="form-input" placeholder="Teléfono">
+            <input type="text" id="operador_telefono" class="form-input" placeholder="Operador de Teléfono">
+            <input type="text" id="provincia" class="form-input" placeholder="Provincia">
+            <input type="text" id="canton" class="form-input" placeholder="Cantón">
+            <input type="text" id="distrito" class="form-input" placeholder="Distrito">
+            <input type="text" id="direccion" class="form-input" placeholder="Dirección">
+            <select id="id_rol" class="form-input">
+                <option value="">Seleccionar Rol</option>
+                <option value="1">Administrador</option>
+                <option value="2">Usuario</option>
+                <option value="3">Moderador</option>
+            </select>
+            <button id="btnAgregar" class="btn btn-agregar">Agregar</button>
+        </div>
+        <div class="column select-column">
+            <h2>Seleccionar Usuario</h2>
+            <select id="selectUsuario" class="select-input">
+                <option value="">Seleccionar</option>
+            </select>
+            <br>
+            <br>
+            <input type="text" id="nombreEditar" class="form-input" placeholder="Nombre">
+            <input type="text" id="apellido1Editar" class="form-input" placeholder="Primer Apellido">
+            <input type="text" id="apellido2Editar" class="form-input" placeholder="Segundo Apellido">
+            <input type="text" id="identificacionEditar" class="form-input" placeholder="Identificación">
+            <input type="email" id="correoEditar" class="form-input" placeholder="Correo Electrónico">
+            <input type="password" id="contrasenaEditar" class="form-input" placeholder="Contraseña">
+            <input type="text" id="telefonoEditar" class="form-input" placeholder="Teléfono">
+            <input type="text" id="operador_telefonoEditar" class="form-input" placeholder="Operador de Teléfono">
+            <input type="text" id="provinciaEditar" class="form-input" placeholder="Provincia">
+            <input type="text" id="cantonEditar" class="form-input" placeholder="Cantón">
+            <input type="text" id="distritoEditar" class="form-input" placeholder="Distrito">
+            <input type="text" id="direccionEditar" class="form-input" placeholder="Dirección">
+            <select id="id_rolEditar" class="form-input">
+                <option value="">Seleccionar Rol</option>
+                <!-- Opciones de roles se llenarán dinámicamente -->
+            </select>
+            <button id="btnEditar" class="btn btn-update">Editar</button>
+            <button id="btnEliminar" class="btn btn-delete">Eliminar</button>
+        </div>
+
+        <div class="column view-column">
+            <h2>Lista de Usuarios</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Primer Apellido</th>
+                        <th>Segundo Apellido</th>
+                        <th>Identificación</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="usuariosList">
+                    <!-- Aquí se llenará la lista de usuarios mediante JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../Logica/crud_usuarios.js"></script>
+</body>
+</html>

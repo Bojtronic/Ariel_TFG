@@ -5,14 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión</title>
     <link rel="stylesheet" href="../Estilos/login.css">
+    <noscript>
+        <style>
+            .noscript-message {
+                display: block;
+                text-align: center;
+                margin: 20px;
+                font-size: 18px;
+                color: red;
+            }
+            .login-container {
+                display: none;
+            }
+        </style>
+        <div class="noscript-message">
+            JavaScript está deshabilitado. Por favor, habilítalo para usar esta página.
+        </div>
+    </noscript>
 </head>
 <body>
     <div class="login-container">
         <form id="loginForm" onsubmit="submitForm(); return false;">
-            <label for="username">Nombre de usuario</label>
-            <input type="text" id="nombre" name="nombre" required>
+            <label for="nombre">Correo</label>
+            <input type="email" id="nombre" name="nombre" required>
 
-            <label for="password">Contraseña</label>
+            <label for="clave">Contraseña</label>
             <input type="password" id="clave" name="clave" required>
 
             <button type="submit">Iniciar sesión</button>

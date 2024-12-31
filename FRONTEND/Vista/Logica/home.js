@@ -1,7 +1,7 @@
 function mantenimiento(opcion) {
     switch (opcion) {
-        case 'personas':
-            window.location.href = 'crud_personas.html';
+        case 'usuarios':
+            window.location.href = 'crud_usuarios.html';
             break;
         case 'funcionarios':
             window.location.href = 'crud_funcionarios.html';

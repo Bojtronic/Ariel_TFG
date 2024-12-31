@@ -1,17 +1,17 @@
 let serverUrl = "http://localhost:3000/api";
 
 function submitForm() {
-    var username = document.getElementById('nombre').value;
-    var password = document.getElementById('clave').value;
+    const email = document.getElementById('nombre').value;
+    const password = document.getElementById('clave').value;
 
     // Validar que los campos no estén vacíos
-    if (!username || !password) {
-        console.error('Por favor, ingrese tanto el nombre como la clave.');
+    if (!email || !password) {
+        alert('Por favor, complete ambos campos.');
         return;
     }
 
-    // Realizar la solicitud GET utilizando fetch()
-    fetch(`${serverUrl}/administradores?id=${encodeURIComponent(username)}`, {
+    // Realizar la solicitud GET para obtener la lista de usuarios
+    fetch(`${serverUrl}/usuarios`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -19,25 +19,23 @@ function submitForm() {
     })
         .then(response => {
             if (!response.ok) {
-                alert('La solicitud no fue exitosa');
-                throw new Error('La solicitud no fue exitosa');
-                
+                throw new Error('Error al obtener la lista de usuarios.');
             }
             return response.json();
         })
         .then(data => {
-            // Verificar si la respuesta contiene un usuario con el mismo nombre y clave
-            const usuarioEncontrado = data.find(user => user.nombre === username && user.clave === password);
+            // Buscar usuario con las credenciales ingresadas
+            const usuarioEncontrado = data.find(user => user.correo === email && user.identificacion === password);
 
             if (usuarioEncontrado) {
-                // Redirigir a otra página HTML (reemplaza 'otra_pagina.html' con la ruta correcta)
+                // Redirigir a la página de inicio
                 window.location.href = 'home.html';
             } else {
-                console.log('Usuario no encontrado o credenciales incorrectas.');
-                alert('Usuario no encontrado o credenciales incorrectas.');
+                alert('Usuario o contraseña incorrectos.');
+                //window.location.href = 'home.html';
             }
         })
         .catch(error => {
-            alert(`Error al realizar la solicitud: ${error.message}`);
+            alert(`Error: ${error.message}`);
         });
 }
