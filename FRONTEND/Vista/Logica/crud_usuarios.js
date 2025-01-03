@@ -17,9 +17,9 @@ async function read(url) {
 // Función para agregar un usuario
 async function agregarUsuario() {
     const inputs = [
-        'nombre', 'apellido1', 'apellido2', 'identificacion',
-        'correo', 'contrasena', 'telefono', 'operador_telefono',
-        'provincia', 'canton', 'distrito', 'direccion', 'id_rol'
+        'tipo_identificacion', 'identificacion', 'nombre', 'apellido_1', 'apellido_2', 
+        'provincia', 'canton', 'distrito', 'direccion',
+        'correo', 'contrasena', 'telefono', 'operador_telefono', 'id_rol'
     ];
 
     const usuario = {};
