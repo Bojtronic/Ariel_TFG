@@ -15,7 +15,7 @@
         <div class="column form-column">
             <h2>Agregar Usuario</h2>
             <select id="tipo_identificacion" class="form-input">
-                <option value="">Seleccionar Tipo de Identificación</option>
+                <option value="">Tipo de Identificación</option>
                 <option value="cedula">Cédula</option>
                 <option value="dimex">DIMEX</option>
                 <option value="pasaporte">Pasaporte</option>
@@ -44,9 +44,14 @@
             <input type="email" id="correo" class="form-input" placeholder="Correo Electrónico">
             <input type="password" id="contrasena" class="form-input" placeholder="Contraseña">
             <input type="text" id="telefono" class="form-input" placeholder="Teléfono">
-            <input type="text" id="operador_telefono" class="form-input" placeholder="Operador de Teléfono">
+            <select id="operador_telefono" class="form-input">
+                <option value="">Operador de telefono</option>
+                <option value="Kolbi">Kolbi</option>
+                <option value="Claro">Claro</option>
+                <option value="Liberty">Liberty</option>
+            </select>
             <select id="id_rol" class="form-input">
-                <option value="">Seleccionar Rol</option>
+                <option value="">Rol</option>
                 <option value="1">Administrador</option>
                 <option value="2">Usuario</option>
                 <option value="3">Recursos Humanos</option>
@@ -55,34 +60,56 @@
         </div>
         
         <div class="column select-column">
-            <h2>Seleccionar Usuario</h2>
-            <select id="selectUsuario" class="select-input">
+            <h2>Editar/Eliminar Usuario</h2>
+            <select id="selectUsuario" class="select-input" style="background-color: cadetblue;">
                 <option value="">Seleccionar</option>
             </select>
-            <br><br>
-            <select id="tipoIdentificacionEditar" class="form-input">
-                <option value="">Seleccionar Tipo de Identificación</option>
+            <br>
+            <br>
+            <select id="tipo_identificacion_editar" class="form-input">
+                <option value="">Tipo de Identificación</option>
                 <option value="cedula">Cédula</option>
                 <option value="dimex">DIMEX</option>
                 <option value="pasaporte">Pasaporte</option>
             </select>
-            <input type="text" id="identificacionEditar" class="form-input" placeholder="Identificación">
-            <input type="text" id="nombreEditar" class="form-input" placeholder="Nombre">
-            <input type="text" id="apellido1Editar" class="form-input" placeholder="Primer Apellido">
-            <input type="text" id="apellido2Editar" class="form-input" placeholder="Segundo Apellido">
-            <input type="text" id="provinciaEditar" class="form-input" placeholder="Provincia">
-            <input type="text" id="cantonEditar" class="form-input" placeholder="Cantón">
-            <input type="text" id="distritoEditar" class="form-input" placeholder="Distrito">
-            <input type="text" id="direccionEditar" class="form-input" placeholder="Dirección">
-            <input type="email" id="correoEditar" class="form-input" placeholder="Correo Electrónico">
-            <input type="password" id="contrasenaEditar" class="form-input" placeholder="Contraseña">
-            <input type="text" id="telefonoEditar" class="form-input" placeholder="Teléfono">
-            <input type="text" id="operador_telefonoEditar" class="form-input" placeholder="Operador de Teléfono">
-            <select id="id_rolEditar" class="form-input">
-                <option value="">Seleccionar Rol</option>
-                <!-- Opciones dinámicas -->
+            <input type="text" id="identificacion_editar" class="form-input" placeholder="Identificación">
+            <input type="text" id="nombre_editar" class="form-input" placeholder="Nombre">
+            <input type="text" id="apellido_1_editar" class="form-input" placeholder="Primer Apellido">
+            <input type="text" id="apellido_2_editar" class="form-input" placeholder="Segundo Apellido">
+            
+            <label for="provincia">Provincia:</label>
+            <select id="provincia_editar" class="form-input">
+                <option value="">Seleccionar Provincia</option>
             </select>
-            <select id="estadoEditar" class="form-input">
+            
+            <label for="canton">Cantón:</label>
+            <select id="canton_editar" class="form-input">
+                <option value="">Seleccionar Cantón</option>
+            </select>
+            
+            <label for="distrito">Distrito:</label>
+            <select id="distrito_editar" class="form-input">
+                <option value="">Seleccionar Distrito</option>
+            </select>
+        
+            <input type="text" id="direccion_editar" class="form-input" placeholder="Dirección">
+            <input type="email" id="correo_editar" class="form-input" placeholder="Correo Electrónico">
+            <input type="password" id="contrasena_editar" class="form-input" placeholder="Contraseña">
+            <input type="text" id="telefono_editar" class="form-input" placeholder="Teléfono">
+            <select id="operador_telefono_editar" class="form-input">
+                <option value="">Operador de telefono</option>
+                <option value="Kolbi">Kolbi</option>
+                <option value="Claro">Claro</option>
+                <option value="Liberty">Liberty</option>
+            </select>
+            <select id="id_rol_editar" class="form-input">
+                <option value="">Rol</option>
+                <option value="1">Administrador</option>
+                <option value="2">Usuario</option>
+                <option value="3">Recursos Humanos</option>
+            </select>
+
+            <select id="estado_editar" class="form-input">
                 <option value="activo">Activo</option>
                 <option value="inactivo">Inactivo</option>
             </select>

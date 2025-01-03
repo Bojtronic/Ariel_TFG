@@ -62,19 +62,26 @@ async function editarUsuario() {
     }
 
     const inputs = [
-        'nombreEditar', 'apellido1Editar', 'apellido2Editar', 'identificacionEditar',
-        'correoEditar', 'contrasenaEditar', 'telefonoEditar', 'operador_telefonoEditar',
-        'provinciaEditar', 'cantonEditar', 'distritoEditar', 'direccionEditar', 'id_rolEditar'
+        'tipo_identificacion_editar', 'identificacion_editar', 'nombre_editar', 'apellido_1_editar', 'apellido_2_editar',
+        'provincia_editar', 'canton_editar', 'distrito_editar', 'direccion_editar',
+        'correo_editar', 'contrasena_editar', 'telefono_editar', 'operador_telefono_editar',
+        'id_rol_editar', 'estado_editar'
     ];
 
     const usuarioEditado = {};
+    let camposIncompletos = [];
+
     for (const id of inputs) {
         const value = document.getElementById(id).value.trim();
         if (!value) {
-            alert(`Por favor, complete el campo: ${id}`);
-            return;
+            camposIncompletos.push(id);
         }
-        usuarioEditado[id.replace('Editar', '')] = value;
+        usuarioEditado[id.replace('_editar', '')] = value;
+    }
+
+    if (camposIncompletos.length > 0) {
+        alert(`Por favor, complete los siguientes campos: ${camposIncompletos.join(', ')}`);
+        return;
     }
 
     try {
@@ -85,7 +92,8 @@ async function editarUsuario() {
         });
 
         if (!response.ok) {
-            throw new Error('Error al editar usuario');
+            const errorDetails = await response.text();
+            throw new Error(`Error al editar usuario: ${errorDetails}`);
         }
 
         alert('Usuario editado con éxito');
@@ -97,6 +105,7 @@ async function editarUsuario() {
         alert('Error al editar usuario. Consulta la consola para más detalles.');
     }
 }
+
 
 // Función para eliminar un usuario
 async function eliminarUsuario() {
@@ -176,6 +185,34 @@ document.getElementById('btnEliminar').addEventListener('click', eliminarUsuario
 actualizarLista();
 llenarSelect();
 
+document.getElementById('selectUsuario').addEventListener('change', async function () {
+    const selectedId = this.value;
+    if (!selectedId) {
+        limpiarFormulario();
+        return;
+    }
+
+    try {
+        const usuario = await read(`${usuarios_url}/${selectedId}`);
+        document.getElementById('tipo_identificacion_editar').value = usuario.tipo_identificacion || '';
+        document.getElementById('identificacion_editar').value = usuario.identificacion || '';
+        document.getElementById('nombre_editar').value = usuario.nombre || '';
+        document.getElementById('apellido_1_editar').value = usuario.apellido1 || '';
+        document.getElementById('apellido_2_editar').value = usuario.apellido2 || '';
+        document.getElementById('provincia_editar').value = usuario.provincia || '';
+        document.getElementById('canton_editar').value = usuario.canton || '';
+        document.getElementById('distrito_editar').value = usuario.distrito || '';
+        document.getElementById('direccion_editar').value = usuario.direccion || '';
+        document.getElementById('correo_editar').value = usuario.correo || '';
+        document.getElementById('contrasena_editar').value = usuario.contrasena || '';
+        document.getElementById('telefono_editar').value = usuario.telefono || '';
+        document.getElementById('operador_telefono_editar').value = usuario.operador_telefono || '';
+        document.getElementById('id_rol_editar').value = usuario.id_rol || '';
+        document.getElementById('estado_editar').value = usuario.estado || '';
+    } catch (error) {
+        console.error('Error al obtener datos del usuario seleccionado:', error);
+    }
+});
 
 
 
@@ -1110,44 +1147,70 @@ const provinciasData = {
 
 // Inicializar dropdowns
 function initializeDropdowns() {
+    const provincias = provinciasData.provincias; 
     const provinciaSelect = document.getElementById("provincia");
-    const provincias = provinciasData.provincias; // Accedemos al objeto "provincias"
+    const provinciaSelect_editar = document.getElementById("provincia_editar");
 
     provinciaSelect.innerHTML = Object.keys(provincias).map(key => {
         const provincia = provincias[key];
         return `<option value="${key}">${provincia.nombre}</option>`;
     }).join("");
 
+    provinciaSelect_editar.innerHTML = Object.keys(provincias).map(key => {
+        const provincia = provincias[key];
+        return `<option value="${key}">${provincia.nombre}</option>`;
+    }).join("");
+
     provinciaSelect.addEventListener("change", updateCantones);
+    provinciaSelect_editar.addEventListener("change", updateCantones);
     updateCantones(); // Llenar cantones iniciales
 }
 
 // Actualizar cantones
 function updateCantones() {
+    const provincias = provinciasData.provincias;
     const provinciaId = document.getElementById("provincia").value;
-    const provincias = provinciasData.provincias; // Accedemos al objeto "provincias"
+    const provinciaId_editar = document.getElementById("provincia_editar").value;
     const cantonesData = provincias[provinciaId]?.cantones || {};
+    const cantonesData_editar = provincias[provinciaId_editar]?.cantones || {};
 
     const cantonSelect = document.getElementById("canton");
+    const cantonSelect_editar = document.getElementById("canton_editar");
+
     cantonSelect.innerHTML = Object.keys(cantonesData).map(key => {
         const canton = cantonesData[key];
         return `<option value="${key}">${canton.nombre}</option>`;
     }).join("");
 
+    cantonSelect_editar.innerHTML = Object.keys(cantonesData_editar).map(key => {
+        const canton = cantonesData_editar[key];
+        return `<option value="${key}">${canton.nombre}</option>`;
+    }).join("");
+
     cantonSelect.addEventListener("change", updateDistritos);
+    cantonSelect_editar.addEventListener("change", updateDistritos);
     updateDistritos(); // Llenar distritos iniciales
 }
 
 // Actualizar distritos
 function updateDistritos() {
+    const provincias = provinciasData.provincias;
     const provinciaId = document.getElementById("provincia").value;
+    const provinciaId_editar = document.getElementById("provincia_editar").value;
     const cantonId = document.getElementById("canton").value;
-    const provincias = provinciasData.provincias; // Accedemos al objeto "provincias"
+    const cantonId_editar = document.getElementById("canton_editar").value;
     const distritosData = provincias[provinciaId]?.cantones[cantonId]?.distritos || {};
+    const distritosData_editar = provincias[provinciaId_editar]?.cantones[cantonId_editar]?.distritos || {};
 
     const distritoSelect = document.getElementById("distrito");
+    const distritoSelect_editar = document.getElementById("distrito_editar");
+
     distritoSelect.innerHTML = Object.keys(distritosData).map(key => {
         return `<option value="${key}">${distritosData[key]}</option>`;
+    }).join("");
+
+    distritoSelect_editar.innerHTML = Object.keys(distritosData_editar).map(key => {
+        return `<option value="${key}">${distritosData_editar[key]}</option>`;
     }).join("");
 }
 
