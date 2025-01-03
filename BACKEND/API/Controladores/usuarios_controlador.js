@@ -132,6 +132,7 @@ const update = (req, res) => {
 module.exports = {
     get,
     getById,
+    getByIdentificacion,
     add,
     remove,
     update,
