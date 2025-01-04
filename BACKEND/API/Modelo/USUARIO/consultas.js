@@ -12,6 +12,7 @@ const get = `
     distrito, 
     direccion, 
     correo, 
+    contrasena,
     telefono, 
     operador_telefono, 
     estado 
@@ -32,6 +33,7 @@ const getById = `
     distrito, 
     direccion, 
     correo, 
+    contrasena,
     telefono, 
     operador_telefono, 
     estado 
@@ -53,6 +55,7 @@ const getByIdentificacion = `
     distrito, 
     direccion, 
     correo, 
+    contrasena,
     telefono, 
     operador_telefono, 
     estado 
