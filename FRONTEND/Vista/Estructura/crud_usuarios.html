@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mantenimiento de Usuarios</title>
-    <link rel="stylesheet" href="../Estilos/crud_personas.css">
+    <link rel="stylesheet" href="../Estilos/crud_usuarios.css">
 </head>
 <body>
     <div>
@@ -116,8 +116,11 @@
             <button id="btnEditar" class="btn btn-update">Editar</button>
             <button id="btnEliminar" class="btn btn-delete">Eliminar</button>
         </div>
-        <div class="column view-column">
-            <h2>Lista de Usuarios</h2>
+       
+
+        
+    </div>
+    <h2>Lista de Usuarios</h2>
             <table>
                 <thead>
                     <tr>
@@ -127,15 +130,17 @@
                         <th>Primer Apellido</th>
                         <th>Segundo Apellido</th>
                         <th>Correo</th>
+                        <th>Contraseña</th>
                         <th>Teléfono</th>
+                        <th>Operador telefono</th>
+                        <th>Estado</th>
+                        <th>ID rol</th>
                     </tr>
                 </thead>
                 <tbody id="usuariosList">
                     <!-- Datos dinámicos -->
                 </tbody>
             </table>
-        </div>
-    </div>
     <script src="../Logica/crud_usuarios.js"></script>
 </body>
 </html>

@@ -145,7 +145,11 @@ async function actualizarLista() {
                 <td>${usuario.apellido1}</td>
                 <td>${usuario.apellido2}</td>
                 <td>${usuario.correo}</td>
+				<td>${usuario.contrasena}</td>
                 <td>${usuario.telefono}</td>
+				<td>${usuario.operador_telefono}</td>
+				<td>${usuario.estado}</td>
+				<td>${usuario.id_rol}</td>
             `;
             usuariosList.appendChild(row);
         });
